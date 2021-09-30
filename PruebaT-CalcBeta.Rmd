@@ -1,0 +1,63 @@
+---
+title: "Prueba T"
+author: "Pedro González"
+date: "09/29/2021"
+output: html_document
+---
+
+### Prueba t
+
+```{r}
+x<-rnorm(10)
+y<-rnorm(10)
+t.test(x,y)
+```
+
+```{r}
+ttest<-t.test(x,y)
+names(ttest)
+ttest$statistic
+```
+### Generación de los datos t
+```{r}
+ts<-replicate(1000,t.test(rnorm(10),rnorm(10))$statistic)
+```
+
+```{r}
+pts<-seq(-5,5,length=100)
+plot(pts,dt(pts,df=18),col="blue",type="l")
+lines(density(ts))
+```
+
+```{r}
+qqplot(ts,rt(1000,df=18))
+abline(0,1,col="blue",lwd=2)
+```
+
+```{r}
+probs<-c(0.90,0.95,0.99)
+quantile(ts,probs)
+qt(probs,df=18)
+```
+
+```{r}
+t.potencia=function(n){
+  t1=qt(0.025,df=2*n-2)
+  t2=qt(0.975,df=2*n-2)
+  ts=replicate(1000,
+               t.test(rnorm(n,5.0,1.0),rnorm(n,4.5,1.0))$statistic
+               )
+  sum(ts<t1 | ts>t2)/1000
+}
+```
+
+```{r}
+t.potencia(90)
+```
+
+```{r}
+nn<-c(30,40,60,80,90,100)
+res=sapply(nn,function(nn)t.potencia(nn))
+plot(nn,res,type="l")
+```
+
